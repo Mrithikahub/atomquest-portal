@@ -1,14 +1,6 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const { createClient } = require('@libsql/client');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
 
 const express = require('express');
 const cors = require('cors');
@@ -79,24 +71,12 @@ async function dbAll(sql, params = []) {
 async function sendEmail(to, subject, htmlContent) {
   try {
     console.log('📧 Sending email to:', to);
-    await transporter.sendMail({
-      from: `"AtomQuest Portal" <${process.env.GMAIL_USER}>`,
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    await sgMail.send({
       to: to,
+      from: process.env.SENDGRID_FROM_EMAIL,
       subject: subject,
-      html: `<!DOCTYPE html>
-        <html><head><meta charset="utf-8"></head>
-        <body style="margin:0;padding:0;background:#FBF7EE;font-family:Inter,sans-serif;">
-          <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;border:1px solid #E8D5A3;overflow:hidden;">
-            <div style="background:#1A1208;padding:24px 32px;">
-              <div style="color:#D4A843;font-size:18px;font-weight:800;">⚡ AtomQuest</div>
-              <div style="color:#9B8A6B;font-size:11px;">GOAL SETTING PORTAL</div>
-            </div>
-            <div style="padding:32px;">${htmlContent}</div>
-            <div style="padding:16px 32px;background:#FBF7EE;border-top:1px solid #E8D5A3;text-align:center;">
-              <p style="color:#9B8A6B;font-size:12px;margin:0;">AtomQuest Goal Portal · Hackathon 1.0</p>
-            </div>
-          </div>
-        </body></html>`
+      html: htmlContent
     });
     console.log('✅ Email sent successfully to:', to);
   } catch(e) {
