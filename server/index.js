@@ -74,7 +74,10 @@ async function sendEmail(to, subject, htmlContent) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     await sgMail.send({
       to: to,
-      from: process.env.SENDGRID_FROM_EMAIL,
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL || 'mrithikakumar1112@gmail.com',
+        name: 'AtomQuest Portal'
+      },
       subject: subject,
       html: htmlContent
     });
