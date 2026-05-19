@@ -49,5 +49,8 @@ export const getNotifCount = () => api.get('/notifications/count');
 export const markRead = (id) => api.put(`/notifications/${id}/read`);
 export const markAllRead = () => api.put('/notifications/read-all');
 export const getEscalations = () => api.get('/escalations');
+export const getAdminEmployees = () => api.get('/admin/employees');
+export const getAdminManagers = () => api.get('/admin/managers');
+export const assignManager = (employeeId, managerId) => api.put('/admin/assign-manager', { employeeId, managerId });
 
 export default api;

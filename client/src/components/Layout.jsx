@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Target, CheckSquare, BarChart2, LogOut, Zap, ChevronLeft, ChevronRight, Users, Bell } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { getNotificationCount, getNotifications, markNotificationRead, markAllNotificationsRead } from '../api'
+import { getNotifCount, getNotifications, markRead, markAllRead } from '../api'
 
 export default function Layout({ children }) {
   const navigate = useNavigate()
@@ -13,7 +13,7 @@ export default function Layout({ children }) {
   const bellRef = useRef(null)
 
   useEffect(() => {
-    const fetchCount = () => getNotificationCount().then(r => setNotifCount(r.data.count || 0)).catch(() => {})
+    const fetchCount = () => getNotifCount().then(r => setNotifCount(r.data.count || 0)).catch(() => {})
     fetchCount()
     const interval = setInterval(fetchCount, 30000)
     return () => clearInterval(interval)
@@ -31,13 +31,13 @@ export default function Layout({ children }) {
   }, [])
 
   const handleMarkRead = async (id) => {
-    await markNotificationRead(id).catch(() => {})
+    await markRead(id).catch(() => {})
     setNotifs(prev => prev.map(n => n.id === id ? { ...n, read: 1 } : n))
     setNotifCount(prev => Math.max(0, prev - 1))
   }
 
   const handleMarkAll = async () => {
-    await markAllNotificationsRead().catch(() => {})
+    await markAllRead().catch(() => {})
     setNotifs(prev => prev.map(n => ({ ...n, read: 1 })))
     setNotifCount(0)
   }
