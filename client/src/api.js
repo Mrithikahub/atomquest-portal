@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-const apiBaseURL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : '');
+const BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL + '/api'
+  : '/api';
 
-if (!apiBaseURL && import.meta.env.PROD) {
-  console.error('VITE_API_URL is not configured. Production API requests will fail until it points to the Render backend.');
-}
+console.log('API Base URL:', BASE);
 
-const api = axios.create({
-  baseURL: apiBaseURL ? apiBaseURL.replace(/\/$/, '') : undefined
-});
+const api = axios.create({ baseURL: BASE });
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('aq_token');
@@ -42,17 +40,14 @@ export const saveCheckin = d => api.post('/checkins', d);
 export const getCheckins = goalId => api.get(`/checkins/${goalId}`);
 export const getTeam = () => api.get('/users/team');
 export const getAllUsers = () => api.get('/users/all');
-export const getReport = (params) => api.get('/reports/achievement', { params });
+export const getReport = () => api.get('/reports/achievement');
 export const getCompletion = () => api.get('/reports/completion');
 export const getAudit = () => api.get('/audit');
 export const createSharedGoal = d => api.post('/goals/shared', d);
-export const getEscalations = () => api.get('/escalations');
 export const getNotifications = () => api.get('/notifications');
-export const getNotificationCount = () => api.get('/notifications/count');
-export const markNotificationRead = id => api.put(`/notifications/${id}/read`);
-export const markAllNotificationsRead = () => api.put('/notifications/read-all');
-export const getAdminEmployees = () => api.get('/admin/employees');
-export const getAdminManagers = () => api.get('/admin/managers');
-export const assignManager = (employeeId, managerId) => api.put('/admin/assign-manager', { employeeId, managerId });
+export const getNotifCount = () => api.get('/notifications/count');
+export const markRead = (id) => api.put(`/notifications/${id}/read`);
+export const markAllRead = () => api.put('/notifications/read-all');
+export const getEscalations = () => api.get('/escalations');
 
 export default api;
