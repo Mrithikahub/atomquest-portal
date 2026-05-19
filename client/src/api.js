@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const apiBaseURL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : '');
+
+if (!apiBaseURL && import.meta.env.PROD) {
+  console.error('VITE_API_URL is not configured. Production API requests will fail until it points to the Render backend.');
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api'
+  baseURL: apiBaseURL ? apiBaseURL.replace(/\/$/, '') : undefined
 });
 
 api.interceptors.request.use(config => {
