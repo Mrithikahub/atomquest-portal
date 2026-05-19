@@ -1,5 +1,5 @@
 require('dotenv').config();
-const sgMail = require('@sendgrid/mail');
+const Brevo = require('@getbrevo/brevo');
 const { createClient } = require('@libsql/client');
 
 const express = require('express');
@@ -71,16 +71,16 @@ async function dbAll(sql, params = []) {
 async function sendEmail(to, subject, htmlContent) {
   try {
     console.log('📧 Sending email to:', to);
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    await sgMail.send({
-      to: to,
-      from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'mrithikakumar1112@gmail.com',
-        name: 'AtomQuest Portal'
-      },
-      subject: subject,
-      html: htmlContent
-    });
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
+
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = htmlContent;
+    sendSmtpEmail.sender = { name: 'AtomQuest Portal', email: 'mrithikakumar1112@gmail.com' };
+    sendSmtpEmail.to = [{ email: to }];
+
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log('✅ Email sent successfully to:', to);
   } catch(e) {
     console.log('⚠️ Email error:', e.message);
