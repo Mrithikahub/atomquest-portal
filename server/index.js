@@ -1,5 +1,5 @@
 require('dotenv').config();
-const Brevo = require('@getbrevo/brevo');
+const SibApiV3Sdk = require('@getbrevo/brevo');
 const { createClient } = require('@libsql/client');
 
 const express = require('express');
@@ -71,16 +71,15 @@ async function dbAll(sql, params = []) {
 async function sendEmail(to, subject, htmlContent) {
   try {
     console.log('📧 Sending email to:', to);
-    const apiInstance = new Brevo.TransactionalEmailsApi();
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = htmlContent;
-    sendSmtpEmail.sender = { name: 'AtomQuest Portal', email: 'mrithikakumar1112@gmail.com' };
-    sendSmtpEmail.to = [{ email: to }];
-
-    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    await apiInstance.sendTransacEmail({
+      subject: subject,
+      htmlContent: htmlContent,
+      sender: { name: 'AtomQuest Portal', email: 'mrithikakumar1112@gmail.com' },
+      to: [{ email: to }]
+    });
     console.log('✅ Email sent successfully to:', to);
   } catch(e) {
     console.log('⚠️ Email error:', e.message);
