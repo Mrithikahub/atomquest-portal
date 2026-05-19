@@ -187,17 +187,14 @@ function getCurrentQuarter() {
 }
 
 async function seedUsers() {
-  const existing = dbGet('SELECT id FROM users LIMIT 1');
-  if (existing) return;
-
   const hash = await bcrypt.hash('Test@123', 10);
 
-  dbRun('INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)',
+  dbRun('INSERT OR IGNORE INTO users (name, email, password, role) VALUES (?,?,?,?)',
     ['Admin User', 'admin@test.com', hash, 'admin']);
-  dbRun('INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)',
+  dbRun('INSERT OR IGNORE INTO users (name, email, password, role) VALUES (?,?,?,?)',
     ['Ravi Kumar', 'manager@test.com', hash, 'manager']);
   const manager = dbGet("SELECT id FROM users WHERE email='manager@test.com'");
-  dbRun('INSERT INTO users (name, email, password, role, manager_id) VALUES (?,?,?,?,?)',
+  dbRun('INSERT OR IGNORE INTO users (name, email, password, role, manager_id) VALUES (?,?,?,?,?)',
     ['Priya Sharma', 'employee@test.com', hash, 'employee', manager.id]);
 
   console.log('✅ Seeded: admin@test.com, manager@test.com, employee@test.com | password: Test@123');
